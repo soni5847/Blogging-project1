@@ -17,9 +17,9 @@ const createAuthor = async function (req, res) {
     if(!fname){
         return res.status(400).send({status:false,msg:"first name is required"})
     }
-    if(!validator.fname){
-        return res.status(400).send({status:false,msg:" Valid first name "})
-    }
+    // if(!validator.fname){
+    //     return res.status(400).send({status:false,msg:" Valid first name "})
+    // }
     
     if(!email){
         return res.status(400).send({status:false,msg:"email is required"})
