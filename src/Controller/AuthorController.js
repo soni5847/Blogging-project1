@@ -28,6 +28,13 @@ const createAuthor = async function (req, res) {
         return res.status(400).send({status:false,msg:" email should be valid"})
     }
 
+    if(!password){
+        return res.status(400).send({status:false,msg:"password is required"})
+    }
+    if(!validator.fname){
+        return res.status(400).send({status:false,msg:" Valid password "})
+    }
+
     let NewData = await authorModel.create(data);
     return res.status(201).send({ message: NewData });
     }
