@@ -18,7 +18,20 @@ const createAuthor = async function (req, res) {
         return res.status(400).send({status:false,msg:"first name is required"})
     }
     if(!validator.fname){
-        return res.status(400).send({status:false,msg:" Valid first name "})
+        return res.status(400).send({status:false,msg:" please enter Valid first name "})
+    }
+    if(!lname){
+        return res.status(400).send({status:false,msg:"last name is required"})
+    }
+    if(!validator.lname){
+        return res.status(400).send({status:false,msg:" please enter Valid last name "})
+    }
+
+    if(!title){
+        return res.status(400).send({status:false,msg:"title is required"})
+    }
+    if(!validator.title){
+        return res.status(400).send({status:false,msg:" please enter Valid title "})
     }
     
     if(!email){
@@ -26,6 +39,13 @@ const createAuthor = async function (req, res) {
     }
     if(!emailRegex.test(email)){
         return res.status(400).send({status:false,msg:" email should be valid"})
+    }
+
+    if(!password){
+        return res.status(400).send({status:false,msg:"password is required"})
+    }
+    if(!validator.fname){
+        return res.status(400).send({status:false,msg:" Valid password "})
     }
 
     let NewData = await authorModel.create(data);
