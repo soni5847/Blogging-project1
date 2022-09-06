@@ -1,4 +1,3 @@
-
 const authorModel = require('../model/authorModel')
 // const validator = require('../validator/validator.js');
 
@@ -28,35 +27,95 @@ const createBlog = async function (req, res) {
 
 const updateBlogs = async function (req, res) {
     try {
-      let blogId = req.params.blogId;
-  
-      if (Object.keys(blogId).length == 0) {
-        return res.status(400).send({ status: false, msg: "BlogsId Required" });
-      }
-  
-      let availableBlog = await blogModel.findById( blogId );
-  
-      if (!availableBlog) {
-        return res.status(404).send({ status: false, msg: "Blog Not Found" });
-      }
-  
-      if (availableBlog.isDeleted === true) {
-        return res.status(404).send({ status: false, msg: "Blog already deleted" });
-      } 
-      
-      
-      if(availableBlog.isDeleted === false) {
-        let data = req.body;
-        let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId },{ $set: data },{ new: true });
-        
-        updatedBlog.isPublished = true;
-        updatedBlog.publishedAt = Date.now();
-        updatedBlog.save();
-  
-        return res.status(200).send({ status: true, data: updatedBlog});
-      }
-  
-    } catch (err) {res.status(500).send({ status: false, msg: err.message })}};
+        let blogId = req.params.blogId;
+
+        if (Object.keys(blogId).length == 0) {
+            return res.status(400).send({ status: false, msg: "BlogsId Required" });
+        }
+
+        let availableBlog = await blogModel.findById(blogId);
+
+        if (!availableBlog) {
+            return res.status(404).send({ status: false, msg: "Blog Not Found" });
+        }
+
+        if (availableBlog.isDeleted === true) {
+            return res.status(404).send({ status: false, msg: "Blog already deleted" });
+        }
+
+
+        if (availableBlog.isDeleted === false) {
+            let data = req.body;
+            let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId }, { $set: data }, { new: true });
+
+            updatedBlog.isPublished = true;
+            updatedBlog.publishedAt = Date.now();
+            updatedBlog.save();
+
+            return res.status(200).send({ status: true, data: updatedBlog });
+        }
+
+    } catch (err) { res.status(500).send({ status: false, msg: err.message }) }
+};
+
+const deleteBlogByParams = async function (req, res) {
+    try {
+
+        let blogId = req.params.blogId
+
+        let blog = await blogModel.findById(blogId)
+
+        let data = blog.isDeleted
+        console.log(data)
+
+        // console.log(blog)
+
+        if (!blog) return res.status(404).send({ status: false, msg: "Blog does not exists" })
+
+        //If the blogId is not deleted (must have isDeleted false)
+
+        if (data == true) return res.status(404).send({ status: false, msg: "blog document doesn't exists" })
+
+        // if (!blog && blog.isDeleted == true) return res.status(404).send("Not valid blogId")
+
+        res.status(200).send({ status: 200 })
+
+    } catch (error) {
+        res.status(500).send({ msg: error.message })
+    }
+
+}
+
+
+
+
+const deleteBlogByQuery = async function (req, res) {
+    try {
+        let query = req.query
+
+
+        if (!query) return res.status(404).send("Give a query")
+
+        let find = await blogModel.findOne(query)
+
+        if (!find) return res.status(404).send("blog not found")
+
+        if (find.isDeleted == true)
+            res.status(200).send({ status: true, msg: "Blog is already Deleted" })
+
+        let update = await blogModel.findOneAndUpdate(query, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
+        res.status(200).send({ msg: "Data deleted succesfully" })
+
+
+
+
+    } catch (err) {
+        res.status(500).send({ msg: err.message })
+    }
+
+}
+
+
 
 // const update=async function(req,res)
 //  {
@@ -77,7 +136,7 @@ const updateBlogs = async function (req, res) {
 
 //  }
 
-module.exports.createBlog=createBlog;
+module.exports.createBlog = createBlog;
 module.exports.updateBlogs = updateBlogs;
-
-
+module.exports.deleteBlogByQuery = deleteBlogByQuery;
+module.exports.deleteBlogByParams = deleteBlogByParams;
