@@ -5,8 +5,6 @@ const emailRegex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
 
 
 
-
-
 const createAuthor = async function (req, res) {
     try{
     let data = req.body;
