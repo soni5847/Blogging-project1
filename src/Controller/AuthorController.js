@@ -20,6 +20,7 @@ const createAuthor = async function (req, res) {
     // if(!validator.fname){
     //     return res.status(400).send({status:false,msg:" Valid first name "})
     // }
+
     
     if(!email){
         return res.status(400).send({status:false,msg:"email is required"})
@@ -31,9 +32,9 @@ const createAuthor = async function (req, res) {
     if(!password){
         return res.status(400).send({status:false,msg:"password is required"})
     }
-    if(!validator.fname){
-        return res.status(400).send({status:false,msg:" Valid password "})
-    }
+    // if(!validator.password){
+    //     return res.status(400).send({status:false,msg:" Valid password "})
+    // }
 
     let NewData = await authorModel.create(data);
     return res.status(201).send({ message: NewData });
