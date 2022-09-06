@@ -83,28 +83,55 @@ const updateBlogs = async function (req, res) {
     } catch (err) { res.status(500).send({ status: false, msg: err.message }) }
 };
 
-// const update=async function(req,res)
-//  {
-//   try { 
-//     let blog=req.body
-//     let {title,body,tag,subcategory}=blog;
-//     // const title=req.body.title
-//     // const body=req.body.body
-//     // const tag=req.body.tag
-//     // const subcategory=req.body.subcategory
-//     let Id=req.params.blogId
-//     const data=await blogModel.findOneAndUpdate({_id:Id},{$set:{title:title,published:true,publishedAt:time.format(),body:body,$push:{tag:tag,subcategory:subcategory}}},{new:true})
-//     return res.status(200).send({status:true,msg:data})
-// }
-// catch(error){
-//     return res.status(500).send({status:false,msg:error.message})
-// }
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-5>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//  }
+const deleteBlog = async function (req, res) {
+    try {
+
+        let blogId = req.params.blogId
+
+        let blog = await blogModel.findById(blogId)
+
+        let data = blog.isDeleted
+        console.log(data)
+
+        // console.log(blog)
+
+        if (!blog) return res.status(404).send({ status: false, msg: "Blog does not exists" })
+
+        //If the blogId is not deleted (must have isDeleted false)
+
+        if (data == true) return res.status(404).send({ status: false, msg: "blog document doesn't exists" })
+
+        // if (!blog && blog.isDeleted == true) return res.status(404).send("Not valid blogId")
+
+        res.status(200).send({ status: 200 })
+
+    } catch (error) {
+        res.status(500).send({ msg: error.message })
+    }
+}
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-6>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const blogDelete = async function (req, res) {
+
+    try {
+        const data = req.query
+        const deleteData = await blogModel.updateMany(data, { isDeleted: true }, { new: true })
+        if (deleteData.matchedCount == 0) {
+            return res.status(404).send({ status: 404, msg: "data not found" })
+        } else {
+            return res.send(deleteData)
+        }
+    } catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+    }
+}
 
 module.exports.createBlog = createBlog;
 module.exports.updateBlogs = updateBlogs;
 module.exports.getBlog = getBlog;
-
+module.exports.deleteBlog = deleteBlog;
+module.exports.blogDelete = blogDelete;
 
 
