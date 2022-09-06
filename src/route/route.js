@@ -7,6 +7,6 @@ const middleware=require('../middleware/middleware.js')
 
 router.post("/authors",authorController.createAuthor);
 router.post("/blogs",blogController.createBlog);
-router.put("/update/:blogId",middleware.mid,blogController.update);
+router.put("/updateBlogs/:blogId",middleware.mid,blogController.updateBlogs);
 
 module.exports = router;
