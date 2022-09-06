@@ -1,6 +1,6 @@
 
 const authorModel = require('../model/authorModel')
-const validator = require('../validator/validator.js');
+// const validator = require('../validator/validator.js');
 
 const blogModel = require('../model/blogModel.js');
 
