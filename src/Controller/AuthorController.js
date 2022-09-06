@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-=======
 const authorModel = require('../model/authorModel.js');
 
 const validator = require('../validator/validator.js');
 const emailRegex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
 
-
-
->>>>>>> 3e5a700932400ef6315e94a4668483ac0d943785
 
 
 const createAuthor = async function (req, res) {
