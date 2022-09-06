@@ -9,7 +9,7 @@ const createAuthor = async function (req, res) {
     try {
         let data = req.body;
         let { fname, lname, title, email, password } = data;
-        if (!validator.isValidRequestBody(data)) {
+        if(!validator.isValidRequestBody) {
             return res.status(400).send({ status: false, msg: "please provide data" })
         }
         if (!fname) {

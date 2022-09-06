@@ -1,4 +1,5 @@
 const authorModel = require('../model/authorModel')
+const validator = require('../validator/validator.js');
 const blogModel = require('../model/blogModel.js');
 
 
@@ -25,13 +26,22 @@ const createBlog = async function (req, res) {
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-3>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const getBlog = async function (req, res) {
     try {
-        let body = req.query;
-        let data = await blogModel.find({ isDeleted: false, isPublished: true, ...body });
-        if (!data) {
-            return res.status(404).send({ status: "false", msg: "Sorry,Data not Found." })
-        }
-        else {
-            return res.status(200).send({ status: true, msg: data });
+        const queries = req.query;
+        if (!validator.isValidRequestBody(queries)) {
+            let data = await blogModel.find({ isDeleted: false, isPublished: true });
+            if (data.length == 0) {
+                return res.status(404).send({ status: "false", msg: "Sorry,Data not Found." })
+            } else {
+                return res.status(200).send({ status: true, msg: data });
+            }
+
+        } else {
+            let data1 = await blogModel.find(queries).find({ isDeleted: false, isPublished: true })
+            if (data1.length == 0) {
+                return res.status(404).send({ status: "false", msg: "Sorry,Data not Found." })
+            } else {
+                return res.status(200).send({ status: true, msg: data1 });
+            }
         }
     } catch (error) {
         return res.status(500).send({ msg: error.message })
