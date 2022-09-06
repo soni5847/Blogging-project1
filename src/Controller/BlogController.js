@@ -46,8 +46,8 @@ const updateBlogs = async function (req, res) {
       
       
       if(availableBlog.isDeleted === false) {
-        const data = req.body;
-        const updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId },{ $set: data },{ new: true });
+        let data = req.body;
+        let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId },{ $set: data },{ new: true });
         
         updatedBlog.isPublished = true;
         updatedBlog.publishedAt = Date.now();
