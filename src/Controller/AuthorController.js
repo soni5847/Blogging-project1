@@ -2,6 +2,7 @@ const authorModel = require('../model/authorModel.js');
 
 const validator = require('../validator/validator.js');
 const emailRegex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
+const jwt = require('jsonwebtoken');
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -33,7 +34,7 @@ const createAuthor = async function (req, res) {
     }
 }
 //==============LOGIN API========================
-const loginUser = async function (req, res) {
+const loginAuthor = async function (req, res) {
     let userName = req.body.emailId;
     let password = req.body.password;
   
@@ -58,3 +59,4 @@ const loginUser = async function (req, res) {
   };
 
 module.exports.createAuthor=createAuthor;
+module.exports.loginAuthor=loginAuthor;

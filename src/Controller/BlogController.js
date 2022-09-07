@@ -94,20 +94,11 @@ const updateBlogs = async function (req, res) {
 
 
 
-<<<<<<< HEAD
 
-       
-=======
->>>>>>> d32fd344e3953681629096cfbc3c828aae746a31
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-5>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> d32fd344e3953681629096cfbc3c828aae746a31
 const deleteBlog = async function (req, res) {
     try {
         let blogId = req.params.blogId
@@ -161,14 +152,8 @@ const deleteByQuery = async function (req, res) {
 //...................................................................................................................//
 
 
-
-
 module.exports.createBlog = createBlog;
 module.exports.updateBlogs = updateBlogs;
 module.exports.getBlog = getBlog;
 module.exports.deleteBlog = deleteBlog;
 module.exports.deleteByQuery = deleteByQuery;
-
-
-
-
