@@ -1,50 +1,24 @@
 const jwt = require("jsonwebtoken")
-const blogsModule = require("../modules/blogsModule")
-
-const authentication = (req, res, next) => {
-    try {
-
-        let token = req.headers["x-api-key"]
-        if (!token) return res.status(400).send({
-            status: false,
-            msg: "token is required"
-        })
-        const decodedToken = jwt.verify(token, 'functionup-plutonium-blogging-Project1-secret-key')
-        if (!decodedToken) return res.status(401).send({
-            status: false,
-            msg: "invalid token. please enter a valid token"
-        })
-        req["decodedToken"] = decodedToken
-        next()
-    } catch (error) {
-        res.status(500).send({
-            status: false,
-            msg: error.message
-        })
-    }
+const authenticate = function (req, res, next) {
+    let token = req.headers["x-api-key"];
+    req.token = token
+    if (!token)
+        return res.status(401).send({ status: false, msg: "token must be present in the request header" })
+     next()
 }
 
-const authorization = async (req, res, next) => {
-    try {
-        let author_Id = req.decodedToken.authorId
-        // console.log(author_Id)
-        let blogId = req.params.blogId
-        let author = await blogsModule.findOne({
-            authorId: author_Id,
-            _id: blogId
-        })
-        if (!author) return res.status(403).send({
-            status: false,
-            msg: "Unauthorized User"
-        })
-        next()
-    } catch (error) {
-        res.status(500).send({
-            status: false,
-            msg: error.message
-        })
-    }
-}
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Authorization>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const authorise = function (req, res, next) {
+    let decodedToken = jwt.verify(req.token, 'functionup-plutonium-blogging-Project1-secret-key')
 
-module.exports.authentication = authentication
-module.exports.authorization = authorization
+    if (!decodedToken) return res.send({ status: false, msg: "token is not valid" })
+    let authorToBeModified = req.params.authorId;
+    let authorLoggedIn = decodedToken.authorId
+
+    //userId comparision to check if the logged-in user is requesting for their own data
+    if (authorToBeModified != authorLoggedIn) return res.status(403).send({ status: false, msg: 'author logged is not allowed to modify the requested authors data' })
+
+    next()
+}
+module.exports.authenticate = authenticate;
+module.exports.authorise = authorise;

@@ -68,7 +68,6 @@ const getBlog = async function (req, res) {
 const updateBlogs = async function (req, res) {
     try {
         let blogId = req.params.blogId;
-
         if (Object.keys(blogId).length == 0) {
             return res.status(400).send({ status: false, msg: "BlogsId Required" });
         }
@@ -95,6 +94,7 @@ const updateBlogs = async function (req, res) {
 
 
 
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-5>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
@@ -104,9 +104,17 @@ const deleteBlog = async function (req, res) {
         let blogId = req.params.blogId
         let blog = await blogModel.findById(blogId)
         let data = blog.isDeleted
+        // console.log(data)
+
+        // console.log(blog)
+
         if (!blog) return res.status(404).send({ status: false, msg: "Blog does not exists" })
         if (data == true) return res.status(404).send({ status: false, msg: "blog document doesn't exists" })
-        res.status(200).send({ status: 200 })
+
+        // if (!blog && blog.isDeleted == true) return res.status(404).send("Not valid blogId")
+
+        res.status(200).send({ msg: deleted })
+
     } catch (error) {
         res.status(500).send({ msg: error.message })
     }
@@ -149,5 +157,3 @@ module.exports.updateBlogs = updateBlogs;
 module.exports.getBlog = getBlog;
 module.exports.deleteBlog = deleteBlog;
 module.exports.deleteByQuery = deleteByQuery;
-
-
