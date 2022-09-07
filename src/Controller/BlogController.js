@@ -99,24 +99,30 @@ const deleteBlog = async function (req, res) {
 }
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-6>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-const blogDelete = async function (req, res) {
+
+const deleteByQuery = async function (req, res) {
     try {
-        const data = req.query
-        const deleteData = await blogModel.updateMany(data, { isDeleted: true }, { new: true })
-        if (deleteData.matchedCount == 0) {
-            return res.status(404).send({ status: 404, msg: "data not found" })
-        } else {
-            return res.send(deleteData)
+      const query = req.query;
+  
+      if (query) {
+        const deletedBlogByQuery = await blogModel.updateMany({ $or: [ {authorId:query.authorId }, {category:query.category },
+        {tags:query.tags}, {subcategory:query.subcategory},{isPublished:query.isPublished}]},
+        {$set:{isDeleted:true , deletedAt:Date.now()}})
+        console.log(deletedBlogByQuery);
+  
+        if(deletedBlogByQuery.modifiedCount===0){
+          return res.status(404).send({status:false, msg: "Blogs not found"})
         }
-    } catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
-    }
-}
+        
+        return res.status(200).send({status:true, msg:"Blogs are deleted successfully."})
+  
+      }
+    } catch (err) { res.status(500).send({ msg: err.message })}};
 
 module.exports.createBlog = createBlog;
 module.exports.updateBlogs = updateBlogs;
 module.exports.getBlog = getBlog;
 module.exports.deleteBlog = deleteBlog;
-module.exports.blogDelete = blogDelete;
+module.exports.deleteByQuery = deleteByQuery;
 
 
