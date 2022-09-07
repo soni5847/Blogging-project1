@@ -6,6 +6,9 @@ const blogModel = require('../model/blogModel.js');
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-2>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
 const createBlog = async function (req, res) {
     try {
         let data = req.body
@@ -23,7 +26,13 @@ const createBlog = async function (req, res) {
         res.status(500).send({ msg: err.message })
     }
 }
+
+
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-3>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
 const getBlog = async function (req, res) {
     try {
         const queries = req.query;
@@ -34,9 +43,11 @@ const getBlog = async function (req, res) {
             } else {
                 return res.status(200).send({ status: true, msg: data });
             }
-
         } else {
-            let data1 = await blogModel.find(queries).find({ isDeleted: false, isPublished: true })
+            let data1 = await blogModel.find({
+                $or: [{ authorId: queries.authorId }, { category: queries.category },
+                { tags: queries.tags }, { subcategory: queries.subcategory }]
+            }).find({ isDeleted: false, isPublished: true })
             if (data1.length == 0) {
                 return res.status(404).send({ status: "false", msg: "Sorry,Data not Found." })
             } else {
@@ -48,7 +59,11 @@ const getBlog = async function (req, res) {
     }
 }
 
+
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-4>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
 
 const updateBlogs = async function (req, res) {
     try {
@@ -56,18 +71,13 @@ const updateBlogs = async function (req, res) {
         if (Object.keys(blogId).length == 0) {
             return res.status(400).send({ status: false, msg: "BlogsId Required" });
         }
-
         let availableBlog = await blogModel.findById(blogId);
-
         if (!availableBlog) {
             return res.status(404).send({ status: false, msg: "Blog Not Found" });
         }
-
         if (availableBlog.isDeleted === true) {
             return res.status(404).send({ status: false, msg: "Blog already deleted" });
         }
-
-
         if (availableBlog.isDeleted === false) {
             let data = req.body;
             let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId },
@@ -84,14 +94,20 @@ const updateBlogs = async function (req, res) {
 
 
 
+<<<<<<< HEAD
 
        
+=======
+>>>>>>> d32fd344e3953681629096cfbc3c828aae746a31
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-5>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> d32fd344e3953681629096cfbc3c828aae746a31
 const deleteBlog = async function (req, res) {
     try {
         let blogId = req.params.blogId
@@ -113,26 +129,37 @@ const deleteBlog = async function (req, res) {
     }
 }
 
+
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-6>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
 
 const deleteByQuery = async function (req, res) {
     try {
-      const query = req.query;
-  
-      if (query) {
-        const deletedBlogByQuery = await blogModel.updateMany({ $or: [ {authorId:query.authorId }, {category:query.category },
-        {tags:query.tags}, {subcategory:query.subcategory},{isPublished:query.isPublished}]},
-        {$set:{isDeleted:true , deletedAt:Date.now()}})
-        console.log(deletedBlogByQuery);
-  
-        if(deletedBlogByQuery.modifiedCount===0){
-          return res.status(404).send({status:false, msg: "Blogs not found"})
+        const query = req.query;
+
+        if (query) {
+            const deletedBlogByQuery = await blogModel.updateMany({
+                $or: [{ authorId: query.authorId }, { category: query.category },
+                { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }]
+            },
+                { $set: { isDeleted: true, deletedAt: Date.now() } })
+            console.log(deletedBlogByQuery);
+
+            if (deletedBlogByQuery.modifiedCount === 0) {
+                return res.status(404).send({ status: false, msg: "Blogs not found" })
+            }
+
+            return res.status(200).send({ status: true, msg: "Blogs are deleted successfully." })
+
         }
-        
-        return res.status(200).send({status:true, msg:"Blogs are deleted successfully."})
-  
-      }
-    } catch (err) { res.status(500).send({ msg: err.message })}};
+    } catch (err) { res.status(500).send({ msg: err.message }) }
+};
+
+
+//...................................................................................................................//
+
 
 
 
