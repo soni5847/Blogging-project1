@@ -2,22 +2,19 @@ const express = require('express');
 const router = express.Router();
 const authorController = require('../Controller/AuthorController.js');
 const blogController = require('../Controller/BlogController.js');
-
-const middleware=require('../middleware/auth.js')
-
+const validator = require('../middleware/auth.js')
 
 
 
 router.post("/authors",authorController.createAuthor);
-router.post("/blogs",middleware.authenticate,middleware.authorise,blogController.createBlog);
+router.post("/blogs",validator.authenticate,blogController.createBlog);
 
-router.get("/getblog",middleware.authenticate,middleware.authorise, blogController.getBlog)
+router.get("/getblog",validator.authenticate, blogController.getBlog)
 
-router.put("/updateBlogs/:blogId",middleware.authenticate,middleware.authorise,blogController.updateBlogs);
+router.put("/updateBlogs/:authorId",validator.authenticate,validator.authorise,blogController.updateBlogs);
 
-router.delete("/deleteBlog/:blogId",middleware.authenticate,middleware.authorise,blogController.deleteBlog);
-router.delete("/deleteByQuery",middleware.authenticate,middleware.authorise,blogController.deleteByQuery);
+router.delete("/deleteBlog/:blogId",validator.authenticate,validator.authorise,blogController.deleteBlog);
+router.delete("/deleteByQuery",validator.authenticate,validator.authorise,blogController.deleteByQuery);
 router.post("/loginAuthor",authorController.loginAuthor);
-
 
 module.exports = router;
