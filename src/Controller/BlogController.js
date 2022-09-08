@@ -69,24 +69,33 @@ const updateBlogs = async function (req, res) {
     try {
         let blogId = req.params.blogId;
         if (Object.keys(blogId).length == 0) {
-            return res.status(400).send({ status: false, msg: "BlogsId Required" });
+            return res.status(400).send({ status: false, msg: "BlogId is required" });
         }
         let availableBlog = await blogModel.findById(blogId);
-    
+
         if (!availableBlog) {
             return res.status(404).send({ status: false, msg: "Blog Not Found" });
         }
         if (availableBlog.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Blog already deleted" });
         }
-            let data = req.body;
-            let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId,isDeleted:false},
-                {
-                    $set: { isPublished: true, publishedAt: new Date() },
-                    $push: { tags: data.tags, subcategory: data.subcategory }
-                }, { new: true})
+         //------------------------------------Authorisation part---------------------------------------//
+        let authorLoggedId = req.authorLoggedIn;
+        if (availableBlog.authorId != authorLoggedId) {
+            return res.status(403).send({ status: false, msg: "Unauthorized" })
+        }
+        //----------------------------------------------------------------------------------------------//
+        let data = req.body;
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ message: "Plesae Enter the data for Updation" })
+        }
+        let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId, isDeleted: false },
+            {
+                $set: { isPublished: true, publishedAt: new Date() },
+                $push: { tags: data.tags, subcategory: data.subcategory }
+            }, { new: true })
 
-            return res.status(200).send({ status: true, data: updatedBlog});
+        return res.status(200).send({ status: true, data: updatedBlog });
 
     } catch (err) { res.status(500).send({ status: false, msg: err.message }) }
 };
