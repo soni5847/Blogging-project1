@@ -1,5 +1,4 @@
 const authorModel = require('../model/authorModel.js');
-
 const validator = require('../validator/validator.js');
 const emailRegex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
 const jwt = require('jsonwebtoken');
@@ -33,14 +32,30 @@ const createAuthor = async function (req, res) {
         return res.status(500).send({ message: error.message })
     }
 }
-//==============LOGIN API========================
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>TOKEN GENERATE FOR LOGGEDIN USER>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
 const loginAuthor = async function (req, res) {
+  try{
     let userName = req.body.emailId;
     let password = req.body.password;
   
     let user = await authorModel.findOne({ emailId: userName, password: password });
+    if(!userName){
+      return res.status(401).send({
+        status: false,
+        msg: "username is required",
+      });
+    }
+    if(!password){
+      return res.status(401).send({
+        status: false,
+        msg: "password is required",
+      });
+    }
     if (!user)
-      return res.send({
+      return res.status(401).send({
         status: false,
         msg: "username or the password is not corerct",
       });
@@ -56,7 +71,14 @@ const loginAuthor = async function (req, res) {
     );
     res.setHeader("x-api-key", token);
     res.send({ status: true, token: token });
+  }catch(error){
+    return res.status(500).send({status:false,msg:error.message})
+  }
   };
+
+//....................................................................................................................//
 
 module.exports.createAuthor=createAuthor;
 module.exports.loginAuthor=loginAuthor;
+
+//....................................................................................................................//

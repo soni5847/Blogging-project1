@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const authorController = require('../Controller/AuthorController.js');
 const blogController = require('../Controller/BlogController.js');
-const validator = require('../validator/validator')
+const validator = require('../middleware/middleware.js')
 
 
 
 router.post("/authors",authorController.createAuthor);
-router.post("/blogs",validator.authenticate,validator.authorise,blogController.createBlog);
+router.post("/blogs",blogController.createBlog);
 
-router.get("/getblog",validator.authenticate,validator.authorise, blogController.getBlog)
+router.get("/getblog",validator.authenticate,blogController.getBlog)
 
 router.put("/updateBlogs/:blogId",validator.authenticate,validator.authorise,blogController.updateBlogs);
 
