@@ -38,10 +38,10 @@ const createAuthor = async function (req, res) {
 
 const loginAuthor = async function (req, res) {
   try{
-    let userName = req.body.emailId;
+    let userName = req.body.email;
     let password = req.body.password;
   
-    let user = await authorModel.findOne({ emailId: userName, password: password });
+    let user = await authorModel.findOne({ email: userName, password: password });
     if(!userName){
       return res.status(401).send({
         status: false,

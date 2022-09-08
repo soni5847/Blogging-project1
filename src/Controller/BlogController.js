@@ -72,6 +72,7 @@ const updateBlogs = async function (req, res) {
             return res.status(400).send({ status: false, msg: "BlogsId Required" });
         }
         let availableBlog = await blogModel.findById(blogId);
+    
         if (!availableBlog) {
             return res.status(404).send({ status: false, msg: "Blog Not Found" });
         }
@@ -79,7 +80,7 @@ const updateBlogs = async function (req, res) {
             return res.status(404).send({ status: false, msg: "Blog already deleted" });
         }
             let data = req.body;
-            let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId,isDeleted:false },
+            let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId,isDeleted:false},
                 {
                     $set: { isPublished: true, publishedAt: new Date() },
                     $push: { tags: data.tags, subcategory: data.subcategory }
