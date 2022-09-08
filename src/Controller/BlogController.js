@@ -79,12 +79,12 @@ const updateBlogs = async function (req, res) {
         if (availableBlog.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Blog already deleted" });
         }
-         //------------------------------------Authorisation part---------------------------------------//
+//------------------------------------------Authorisation---------------------------------------------------------------//     
         let authorLoggedId = req.authorLoggedIn;
         if (availableBlog.authorId != authorLoggedId) {
             return res.status(403).send({ status: false, msg: "Unauthorized" })
         }
-        //----------------------------------------------------------------------------------------------//
+//--------------------------------------------------------------------------------------------------------------------//
         let data = req.body;
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ message: "Plesae Enter the data for Updation" })

@@ -6,12 +6,12 @@ const authenticate = function (req, res, next) {
     if (!token) {
       return res.status(401).send({ status: false, msg: "token must be present" });
     }
-    console.log(token);
+    //console.log(token);
     let decodedToken = jwt.verify(token, "functionup-plutonium-blogging-Project1-secret-key");
     if (!decodedToken) {
       return res.status(401).send({ status: false, msg: "Invalid Token" })
     }
-    req.authorLoggedIn = decodedToken;
+    req.authorLoggedIn = decodedToken.authorId
     next()
   } catch (error) {
     res.status(500).send({ msg: "server error", error: error.message })
