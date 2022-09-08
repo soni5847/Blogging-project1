@@ -68,9 +68,6 @@ const getBlog = async function (req, res) {
 const updateBlogs = async function (req, res) {
     try {
         let blogId = req.params.blogId;
-        if (Object.keys(blogId).length == 0) {
-            return res.status(400).send({ status: false, msg: "BlogId is required" });
-        }
         let availableBlog = await blogModel.findById(blogId);
 
         if (!availableBlog) {
@@ -79,17 +76,14 @@ const updateBlogs = async function (req, res) {
         if (availableBlog.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Blog already deleted" });
         }
-//------------------------------------------Authorisation---------------------------------------------------------------//     
+        //------------------------------------------Authorisation---------------------------------------------------------------//     
         let authorLoggedId = req.authorLoggedIn;
         if (availableBlog.authorId != authorLoggedId) {
             return res.status(403).send({ status: false, msg: "Unauthorized" })
         }
-//--------------------------------------------------------------------------------------------------------------------//
+        //--------------------------------------------------------------------------------------------------------------------//
         let data = req.body;
-        if (Object.keys(data).length == 0) {
-            return res.status(400).send({ message: "Plesae Enter the data for Updation" })
-        }
-        let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId, isDeleted: false },
+        let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId },
             {
                 $set: { isPublished: true, publishedAt: new Date() },
                 $push: { tags: data.tags, subcategory: data.subcategory }
@@ -111,10 +105,16 @@ const deleteBlog = async function (req, res) {
     try {
         let blogId = req.params.blogId
         let blog = await blogModel.findById(blogId)
-        let data = blog.isDeleted
-        if (!blog) return res.status(404).send({ status: false, msg: "Blog does not exists" })
-        if (data == true) return res.status(404).send({ status: false, msg: "blog document doesn't exists" })
-        res.status(200).send({ msg: deleted })
+        if (!blog) return res.status(404).send({ status: false, msg: "Blog document does not exists" })
+        //------------------------------------------Authorisation---------------------------------------------------------------//     
+        let authorLoggedId = req.authorLoggedIn;
+        if (blog.authorId != authorLoggedId) {
+            return res.status(403).send({ status: false, msg: "Unauthorized" })
+        }
+        //--------------------------------------------------------------------------------------------------------------------//
+
+        if (blog.isDeleted == true) return res.status(404).send({ status: false, msg: "Blog document is already deleted" })
+        res.status(200).send({ msg: "Deleted" })
     } catch (error) {
         res.status(500).send({ msg: error.message })
     }
@@ -128,7 +128,7 @@ const deleteBlog = async function (req, res) {
 
 const deleteByQuery = async function (req, res) {
     try {
-        const query = req.query;
+        let query = req.query;
 
         if (query) {
             const deletedBlogByQuery = await blogModel.updateMany({
