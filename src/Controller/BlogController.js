@@ -116,37 +116,55 @@ const deleteBlog = async function (req, res) {
         if (blog.isDeleted == true) return res.status(404).send({ status: false, msg: "Blog document is already deleted" })
         res.status(200).send({ msg: "Deleted" })
     } catch (error) {
-        res.status(500).send({ msg: error.message })
+        return res.status(500).send({ msg: error.message });
     }
 }
 
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-6>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
-const deleteByQuery = async function (req, res) {
+const deleteByQuery = async function(req, res){
     try {
-        let query = req.query;
-
-        if (query) {
-            const deletedBlogByQuery = await blogModel.updateMany({
-                $or: [{ authorId: query.authorId }, { category: query.category },
-                { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }]
-            },
-                { $set: { isDeleted: true, deletedAt: Date.now() } })
-            console.log(deletedBlogByQuery);
-
-            if (deletedBlogByQuery.modifiedCount === 0) {
-                return res.status(404).send({ status: false, msg: "Blogs not found" })
-            }
-
-            return res.status(200).send({ status: true, msg: "Blogs are deleted successfully." })
-
+        let query = req.query
+        if (Object.keys(query).length <= 0) return res.status(404).send({ status: false, msg: "please enter filter for deletion" })
+         
+        
+        
+        let data = {
+            isDeleted: false,
+            authorId: req.authorLoggedIn//authorLoggedIn is present in request that we have set in authorization middleware it contains loggedIn AuthorId
         }
-    } catch (err) { res.status(500).send({ msg: err.message }) }
-};
+        data['$or'] = [
+            { title: query.title },
+            { isPublished: query.isPublished },
+            { authorId: query.authorId },
+            { category: query.category },
+            { subcategory: query.subcategory },
+            { tags: query.tags }
+        ]
+    
+        let modification = await blogModel.find(data)
+        if (modification.length == 0) {
+            return res.status(404).send({ status: true, msg: "No such blog present or user is not authorised" })
+        }
+
+        // let auth = modification.filter((data)=>{
+        //     if(data.authorId == req.authorLoggedIn)
+        //     return data._id
+        //     else{
+        //         return res.status(403).send({status:false,msg:"unauthorised"})
+        //     }
+
+
+        await blogModel.updateMany(
+            data, { $set: { isDeleted: true, deletedAt: new Date().toLocaleString() } })
+        res.status(200).send({ status: true, msg: "blogs deleted" })
+    }
+    catch (err) {
+        res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
 
 
 //...................................................................................................................//
@@ -157,3 +175,33 @@ module.exports.updateBlogs = updateBlogs;
 module.exports.getBlog = getBlog;
 module.exports.deleteBlog = deleteBlog;
 module.exports.deleteByQuery = deleteByQuery;
+
+//const deleteByQuery = async function (req, res) {
+  //  try {
+        //         if (query) {
+           // let query = req.query;
+    
+            //------------------------------------------Authorisation---------------------------------------------------------------//     
+            // let authorLoggedId = req.authorLoggedIn;
+            // if (blog.authorId != authorLoggedId) {
+            //     return res.status(403).send({ status: false, msg: "Unauthorized" })
+            // }
+            //--------------------------------------------------------------------------------------------------------------------//
+    
+            
+        //             const deletedBlogByQuery = await blogModel.updateMany({
+        //                 $or: [{ authorId: query.authorId }, { category: query.category },
+        //                 { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }]
+        //             },
+        //                 { $set: { isDeleted: true, deletedAt: Date.now() } })
+        //             console.log(deletedBlogByQuery);
+        
+        //             if (deletedBlogByQuery.modifiedCount === 0) {
+        //                 return res.status(404).send({ status: false, msg: "Blogs not found" })
+        //             }
+        
+        //             return res.status(200).send({ status: true, msg: "Blogs are deleted successfully." })
+        
+        //         }
+        //     } catch (err) { res.status(500).send({ msg: err.message }) }
+        //}
