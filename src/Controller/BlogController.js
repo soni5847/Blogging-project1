@@ -12,13 +12,44 @@ const blogModel = require('../model/blogModel.js');
 const createBlog = async function (req, res) {
     try {
         let data = req.body
-        let author = data.authorId
+        if (!validator.isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, msg: "Provide Data" })
+        }
+        let { title, body, authorId, tags, category, subcategory, isDeleted, deletedAt, publishedAt, isPublished } = data;
+
+        if (!title) {
+            return res.status(400).send({ status: false, msg: "Provide title" })
+        }
+        if (!body) {
+            return res.status(400).send({ status: false, msg: "Provide body " })
+        }
+        if (!authorId) {
+            return res.status(400).send({ status: false, msg: "authorId missing" })
+        }
+
+        let author = authorId
         let validation = await authorModel.findById(author)
         if (!validation) {
-            res.status(400).send({ status: false, msg: " author is not present" })
+            res.status(404).send({ status: false, msg: " author is not present" })
         }
-        if (data.isPublished) data.publishedAt = new Date()
-        if (data.isDeleted) data.deletedAt = new Date()
+        if (!tags) {
+            return res.status(400).send({ status: false, msg: "category missing" })
+        }
+        if (!category) {
+            return res.status(400).send({ status: false, msg: "category missing" })
+        }
+        if (!subcategory) {
+            return res.status(400).send({ status: false, msg: "category missing" })
+        }
+
+        if (isDeleted === true) {           //if document is set to deleted true it will create timestamp
+            let deletedAt = new Date()
+            deletedAt = deletedAt
+        }
+        if (isPublished === true) {  //if document is set to published true it will create timestamp
+            let publishedAt = new Date()
+            publishedAt = publishedAt
+        }
 
         let savedData = await blogModel.create(data);
         res.status(201).send({ status: true, msg: savedData })
@@ -123,13 +154,13 @@ const deleteBlog = async function (req, res) {
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Question-6>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-const deleteByQuery = async function(req, res){
+const deleteByQuery = async function (req, res) {
     try {
         let query = req.query
-        if (Object.keys(query).length <= 0) return res.status(404).send({ status: false, msg: "please enter filter for deletion" })
-         
-        
-        
+        if (!validator.isValidRequestBody(query)) {
+            return res.status(404).send({ status: false, msg: "please enter filter for deletion" })
+        }
+
         let data = {
             isDeleted: false,
             authorId: req.authorLoggedIn//authorLoggedIn is present in request that we have set in authorization middleware it contains loggedIn AuthorId
@@ -142,20 +173,11 @@ const deleteByQuery = async function(req, res){
             { subcategory: query.subcategory },
             { tags: query.tags }
         ]
-    
+
         let modification = await blogModel.find(data)
         if (modification.length == 0) {
             return res.status(404).send({ status: true, msg: "No such blog present or user is not authorised" })
         }
-
-        // let auth = modification.filter((data)=>{
-        //     if(data.authorId == req.authorLoggedIn)
-        //     return data._id
-        //     else{
-        //         return res.status(403).send({status:false,msg:"unauthorised"})
-        //     }
-
-
         await blogModel.updateMany(
             data, { $set: { isDeleted: true, deletedAt: new Date().toLocaleString() } })
         res.status(200).send({ status: true, msg: "blogs deleted" })
@@ -176,32 +198,3 @@ module.exports.getBlog = getBlog;
 module.exports.deleteBlog = deleteBlog;
 module.exports.deleteByQuery = deleteByQuery;
 
-//const deleteByQuery = async function (req, res) {
-  //  try {
-        //         if (query) {
-           // let query = req.query;
-    
-            //------------------------------------------Authorisation---------------------------------------------------------------//     
-            // let authorLoggedId = req.authorLoggedIn;
-            // if (blog.authorId != authorLoggedId) {
-            //     return res.status(403).send({ status: false, msg: "Unauthorized" })
-            // }
-            //--------------------------------------------------------------------------------------------------------------------//
-    
-            
-        //             const deletedBlogByQuery = await blogModel.updateMany({
-        //                 $or: [{ authorId: query.authorId }, { category: query.category },
-        //                 { tags: query.tags }, { subcategory: query.subcategory }, { isPublished: query.isPublished }]
-        //             },
-        //                 { $set: { isDeleted: true, deletedAt: Date.now() } })
-        //             console.log(deletedBlogByQuery);
-        
-        //             if (deletedBlogByQuery.modifiedCount === 0) {
-        //                 return res.status(404).send({ status: false, msg: "Blogs not found" })
-        //             }
-        
-        //             return res.status(200).send({ status: true, msg: "Blogs are deleted successfully." })
-        
-        //         }
-        //     } catch (err) { res.status(500).send({ msg: err.message }) }
-        //}
