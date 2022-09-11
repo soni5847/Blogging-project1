@@ -146,6 +146,14 @@ const deleteBlog = async function (req, res) {
         //--------------------------------------------------------------------------------------------------------------------//
 
         if (blog.isDeleted == true) return res.status(404).send({ status: false, msg: "Blog document is already deleted" })
+
+        await blogModel.findOneAndUpdate(
+            {_id:blogId},
+            {
+                $set: {isdeleted: true, deleteAt: new Date()}
+                
+            }
+        )
         res.status(200).send({ msg: "Deleted" })
     } catch (error) {
         return res.status(500).send({ msg: error.message });
