@@ -9,10 +9,10 @@ const jwt = require('jsonwebtoken');
 const createAuthor = async function (req, res) {
   try {
     let data = req.body;
-    let { fname, lname, title, email, password } = data;
     if (!validator.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, msg: "Provide Data" })
     }
+    let { fname, lname, title, email, password } = data;
     if (!fname) {
       return res.status(400).send({ status: false, msg: "first name is required" })
     }
@@ -23,7 +23,7 @@ const createAuthor = async function (req, res) {
       return res.status(400).send({ status: false, msg: "Last name is required" })
     }
     if (!lname.match(/^[a-z]+$/i)) {
-      return res.send.status(400).send({ status: false, msg: "Invalid Last Name" })
+      return res.status(400).send({ status: false, msg: "Invalid Last Name" })
     }
     if (!title) {
       return res.status(400).send({ status: false, msg: "title is required" })

@@ -33,13 +33,13 @@ const createBlog = async function (req, res) {
             res.status(404).send({ status: false, msg: " author is not present" })
         }
         if (!tags) {
-            return res.status(400).send({ status: false, msg: "category missing" })
+            return res.status(400).send({ status: false, msg: "tag missing" })
         }
         if (!category) {
             return res.status(400).send({ status: false, msg: "category missing" })
         }
         if (!subcategory) {
-            return res.status(400).send({ status: false, msg: "category missing" })
+            return res.status(400).send({ status: false, msg: "subcategory missing" })
         }
 
         if (isDeleted === true) {           //if document is set to deleted true it will create timestamp
@@ -67,7 +67,8 @@ const createBlog = async function (req, res) {
 const getBlog = async function (req, res) {
     try {
         const queries = req.query;
-        if (!validator.isValidRequestBody(queries)) {
+        if (!validator.isValidRequestBody(queries)) {  
+
             let data = await blogModel.find({ isDeleted: false, isPublished: true });
             if (data.length == 0) {
                 return res.status(404).send({ status: "false", msg: "Sorry,Data not Found." })
@@ -75,7 +76,7 @@ const getBlog = async function (req, res) {
                 return res.status(200).send({ status: true, msg: data });
             }
         } else {
-            let data1 = await blogModel.find({
+            let data1 = await blogModel.find({           
                 $or: [{ authorId: queries.authorId }, { category: queries.category },
                 { tags: queries.tags }, { subcategory: queries.subcategory }]
             }).find({ isDeleted: false, isPublished: true })
